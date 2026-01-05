@@ -118,6 +118,7 @@ import listPlugin from '@fullcalendar/list'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { GOOGLE_API_KEY } from '../firebase/config'
+import { deleteEvent } from '../services/gasApi'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import moment from 'moment'
@@ -193,14 +194,9 @@ const deleteEvent = async () => {
   if (result.isConfirmed) {
     try {
       Swal.showLoading()
-      await axios.delete(
-        `https://www.googleapis.com/calendar/v3/calendars/sarabun07@gmail.com/events/${selectedEvent.value.id}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${authStore.accessToken}`
-          }
-        }
-      )
+      
+      // Use GAS API to delete
+      await deleteEvent(selectedEvent.value.id)
 
       await Swal.fire(
         'ลบเรียบร้อย!',
