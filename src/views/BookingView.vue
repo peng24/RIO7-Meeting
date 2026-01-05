@@ -101,14 +101,47 @@
         </div>
 
         <div class="mb-6">
-            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">เอกสารแนบ (ถ้ามี)</label>
-            <input 
-                class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
-                id="file_input" 
-                type="file"
-                @change="handleFileUpload"
-            >
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">แนบไฟล์เอกสารประกอบการประชุม (PDF, JPG, PNG)</p>
+            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">เอกสารแนบ (ถ้ามี)</label>
+            
+            <!-- Dropzone -->
+            <div @click="$refs.fileInput.click()" class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-blue-500 transition-colors cursor-pointer bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                <input 
+                    ref="fileInput"
+                    type="file"
+                    multiple
+                    @change="handleFileSelect"
+                    class="hidden"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                >
+                <div class="text-center">
+                    <!-- Cloud Upload Icon -->
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <div class="mt-4 flex text-sm text-gray-600 dark:text-gray-400 justify-center">
+                        <span class="font-semibold text-blue-600 dark:text-blue-400">คลิกเพื่อเลือกไฟล์</span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">รองรับ PDF, JPG, PNG (เลือกได้หลายไฟล์)</p>
+                </div>
+            </div>
+
+            <!-- Selected Files List -->
+            <div v-if="selectedFiles.length > 0" class="mt-3 space-y-2">
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">ไฟล์ที่เลือก:</p>
+                <div v-for="(file, index) in selectedFiles" :key="index" class="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-sm text-gray-700 dark:text-gray-200">{{ file.name }}</span>
+                    </div>
+                    <button @click.stop="removeFile(index)" type="button" class="text-red-600 hover:text-red-800 dark:text-red-400">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="mb-6">
@@ -151,7 +184,7 @@ const authStore = useAuthStore()
 
 const isEditing = ref(false)
 const eventId = ref(null)
-const selectedFile = ref(null)
+const selectedFiles = ref([])
 const uploading = ref(false)
 
 const form = reactive({
@@ -187,8 +220,12 @@ onMounted(async () => {
   }
 })
 
-const handleFileUpload = (event) => {
-  selectedFile.value = event.target.files[0]
+const handleFileSelect = (event) => {
+  selectedFiles.value = Array.from(event.target.files)
+}
+
+const removeFile = (index) => {
+  selectedFiles.value.splice(index, 1)
 }
 
 const fetchEventDetails = async (id) => {
@@ -287,24 +324,40 @@ const submitBooking = async () => {
   })
 
 
-  // 3. Upload File (if any)
-  if (selectedFile.value) {
+  // 3. Upload Files (if any)
+  if (selectedFiles.value.length > 0) {
     try {
       uploading.value = true
       Swal.update({
         title: 'กำลังอัปโหลดไฟล์...',
-        text: 'กรุณารอสักครู่ อาจใช้เวลาสักครู่ขึ้นอยู่กับขนาดไฟล์'
+        text: `กำลังอัปโหลด ${selectedFiles.value.length} ไฟล์`
       })
       
-      const publicUrl = await uploadToAdminDrive(selectedFile.value)
-      form.description += `\n\n📎 เอกสารแนบ: ${publicUrl}`
-      selectedFile.value = null // Prevent re-upload on retry
+      const uploadedUrls = []
+      for (let i = 0; i < selectedFiles.value.length; i++) {
+        const file = selectedFiles.value[i]
+        Swal.update({
+          text: `กำลังอัปโหลดไฟล์ ${i + 1}/${selectedFiles.value.length}: ${file.name}`
+        })
+        const publicUrl = await uploadToAdminDrive(file)
+        uploadedUrls.push({ name: file.name, url: publicUrl })
+      }
+      
+      // Append all links to description
+      if (uploadedUrls.length > 0) {
+        form.description += '\n\n'
+        uploadedUrls.forEach((item, index) => {
+          form.description += `📎 เอกสารแนบ ${index + 1}: ${item.url}\n`
+        })
+      }
+      
+      selectedFiles.value = [] // Clear after upload
     } catch (uploadError) {
       console.error('File Upload Error:', uploadError)
       return Swal.fire({
         icon: 'error',
         title: 'อัปโหลดไฟล์ไม่สำเร็จ',
-        text: 'กรุณาลองใหม่อีกครั้ง หรือบันทึกโดยไม่แนบไฟล์',
+        text: 'กรุณาลองใหม่อีกครั้ง',
         confirmButtonColor: '#d33'
       })
     } finally {

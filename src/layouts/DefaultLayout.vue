@@ -27,7 +27,12 @@
               data-dropdown-toggle="dropdown"
             >
               <span class="sr-only">Open user menu</span>
-              <img class="w-8 h-8 rounded-full" :src="authStore.user.photoURL" alt="user photo" />
+              <img v-if="authStore.user?.photoURL" class="w-8 h-8 rounded-full object-cover" :src="authStore.user.photoURL" alt="user photo" />
+              <div v-else class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
             </button>
             <!-- Dropdown menu -->
             <div
