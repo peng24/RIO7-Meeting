@@ -15,11 +15,14 @@ const firebaseConfig = {
   appId: "1:856687113190:web:8b0c575d70fa3f033d1c27"
 };
 
+import { getFirestore } from 'firebase/firestore';
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 export const GAS_UPLOAD_URL = "https://script.google.com/macros/s/AKfycbxMyIucnzGIvEDCTOPG4gcXEWwfXMbN_648OQcbUsXH8hrQCwMm4hSNsCPMSluUKMoDDg/exec";
 
-export { auth };
+export { auth, db };

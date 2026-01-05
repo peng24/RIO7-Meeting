@@ -10,8 +10,20 @@
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">กรอกรายละเอียดเพื่อสร้างนัดหมายในปฏิทิน</p>
       </div>
 
+      <!-- Access Control Check -->
+      <div v-if="!authStore.canBook" class="p-8 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">ไม่มีสิทธิ์เข้าถึง</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">คุณไม่มีสิทธิ์สร้างกิจกรรม กรุณาติดต่อ Super Admin</p>
+        <div class="mt-6">
+            <router-link to="/" class="text-sm font-medium text-blue-600 hover:text-blue-500">กลับสู่หน้าหลัก <span aria-hidden="true">&rarr;</span></router-link>
+        </div>
+      </div>
+
       <!-- Form -->
-      <form @submit.prevent="submitBooking">
+      <form v-else @submit.prevent="submitBooking">
         <div class="grid gap-6 mb-6 md:grid-cols-1">
           <div>
             <label for="topic" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">หัวข้อการประชุม <span class="text-red-600">*</span></label>

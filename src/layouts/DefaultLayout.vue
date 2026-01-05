@@ -35,7 +35,10 @@
               id="dropdown"
             >
               <div class="py-3 px-4">
-                <span class="block text-sm font-semibold text-gray-900 dark:text-white">{{ authStore.user.displayName }}</span>
+                <span class="block text-sm font-semibold text-gray-900 dark:text-white">
+                  {{ authStore.user.displayName || authStore.user.email }} 
+                  <span class="text-xs font-normal text-gray-500">({{ authStore.role }})</span>
+                </span>
                 <span class="block text-sm text-gray-500 truncate dark:text-gray-400">{{ authStore.user.email }}</span>
               </div>
               <ul class="py-1 text-gray-500 dark:text-gray-400" aria-labelledby="user-menu-button">
