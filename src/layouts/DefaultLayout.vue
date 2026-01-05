@@ -80,13 +80,13 @@
 
     <!-- Sidebar -->
     <aside
-      class="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-gradient-to-b from-blue-700 via-blue-800 to-blue-900 border-r border-blue-900 md:translate-x-0"
+      class="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-gradient-to-b from-slate-900 via-[#0B1120] to-gray-900 border-r border-gray-800/50 md:translate-x-0"
       :class="{ 'transform-none': isSidebarOpen }"
       aria-label="Sidenav"
       id="drawer-navigation"
     >
       <!-- Logo Section -->
-      <div class="px-4 pt-6 pb-4 border-b border-blue-700">
+      <div class="px-4 pt-6 pb-4 border-b border-gray-800">
         <div class="flex items-center space-x-3">
           <!-- Water Drop Icon -->
           <svg class="w-10 h-10 flex-shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -113,8 +113,8 @@
           <li>
             <router-link
               to="/"
-              class="flex items-center p-3 text-base font-medium text-blue-100 rounded-xl hover:bg-blue-600 hover:text-white hover:translate-x-1 transition-all duration-200 group"
-              active-class="bg-white text-blue-700 shadow-lg font-bold scale-105"
+              class="flex items-center p-3 text-base font-medium text-gray-400 rounded-xl hover:text-cyan-300 hover:bg-white/5 transition-all duration-200 group"
+              active-class="bg-cyan-500/10 text-cyan-400 font-bold border-l-4 border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.15)]"
             >
               <svg aria-hidden="true" class="w-6 h-6 transition duration-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path></svg>
               <span class="ml-3">Dashboard</span>
@@ -124,8 +124,8 @@
             <router-link
               v-if="authStore.isAuthenticated"
               to="/booking"
-              class="flex items-center p-3 text-base font-medium text-blue-100 rounded-xl hover:bg-blue-600 hover:text-white hover:translate-x-1 transition-all duration-200 group"
-              active-class="bg-white text-blue-700 shadow-lg font-bold scale-105"
+              class="flex items-center p-3 text-base font-medium text-gray-400 rounded-xl hover:text-cyan-300 hover:bg-white/5 transition-all duration-200 group"
+              active-class="bg-cyan-500/10 text-cyan-400 font-bold border-l-4 border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.15)]"
             >
               <svg aria-hidden="true" class="flex-shrink-0 w-6 h-6 transition duration-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
               <span class="ml-3">จองห้องประชุม</span>
@@ -134,8 +134,8 @@
           <li>
             <router-link
               to="/calendar"
-              class="flex items-center p-3 text-base font-medium text-blue-100 rounded-xl hover:bg-blue-600 hover:text-white hover:translate-x-1 transition-all duration-200 group"
-              active-class="bg-white text-blue-700 shadow-lg font-bold scale-105"
+              class="flex items-center p-3 text-base font-medium text-gray-400 rounded-xl hover:text-cyan-300 hover:bg-white/5 transition-all duration-200 group"
+              active-class="bg-cyan-500/10 text-cyan-400 font-bold border-l-4 border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.15)]"
             >
               <svg aria-hidden="true" class="flex-shrink-0 w-6 h-6 transition duration-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
               <span class="ml-3">ปฏิทิน</span>
@@ -145,10 +145,10 @@
       </div>
       
        <!-- Footer in Sidebar -->
-       <div class="absolute bottom-0 left-0 justify-center p-4 space-x-4 w-full lg:flex bg-blue-900 bg-opacity-50 border-t border-blue-700 z-20">
-          <div class="text-xs text-center text-blue-200">
+       <div class="absolute bottom-0 left-0 justify-center p-4 space-x-4 w-full lg:flex bg-gray-900/80 border-t border-gray-800 z-20">
+          <div class="text-xs text-center text-gray-400">
              <p>จัดทำโดย ฝ่ายประชาสัมพันธ์และสารสนเทศ สชป.7</p>
-             <p class="text-cyan-300 font-semibold mt-1">โทร 408</p>
+             <p class="text-cyan-400 font-semibold mt-1">โทร 408</p>
           </div>
        </div>
     </aside>

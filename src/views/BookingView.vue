@@ -1,13 +1,13 @@
 <template>
   <div class="max-w-4xl mx-auto">
-    <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg p-6">
+    <div class="bg-gray-800 border border-gray-700/50 shadow-2xl shadow-black/50 sm:rounded-2xl p-6">
       <!-- Header -->
       <div class="mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+        <h2 class="text-2xl font-extrabold text-white tracking-tight flex items-center">
             <svg class="w-6 h-6 mr-2 text-blue-700 dark:text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
            {{ pageTitle }}
         </h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">กรอกรายละเอียดเพื่อสร้างนัดหมายในปฏิทิน</p>
+        <p class="text-sm text-gray-400 mt-1">กรอกรายละเอียดเพื่อสร้างนัดหมายในปฏิทิน</p>
       </div>
 
       <!-- Pending Warning -->
@@ -16,7 +16,7 @@
       </div>
 
       <!-- Access Control Check -->
-      <div v-if="!authStore.canBook" class="p-8 text-center bg-red-50 dark:bg-red-900 rounded-lg border border-red-200 dark:border-red-700">
+      <div v-if="!authStore.canBook" class="p-8 text-center bg-gray-900 border border-red-500/50 rounded-lg shadow-lg shadow-red-500/10">
         <svg class="mx-auto h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
@@ -109,7 +109,15 @@
             <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">เอกสารแนบ (ถ้ามี)</label>
             
             <!-- Dropzone -->
-            <div @click="$refs.fileInput.click()" class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-blue-500 transition-colors cursor-pointer bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+            <div 
+                @click="$refs.fileInput.click()" 
+                @dragover.prevent="isDragging = true"
+                @dragenter.prevent="isDragging = true"
+                @dragleave.prevent="isDragging = false"
+                @drop.prevent="handleDrop"
+                class="relative border-2 border-dashed rounded-lg p-6 cursor-pointer transition-all duration-200"
+                :class="isDragging ? 'border-cyan-400 bg-cyan-400/10 scale-[1.02] shadow-lg shadow-cyan-500/20' : 'border-gray-600 bg-gray-700/50 hover:bg-gray-700 hover:border-gray-500'"
+            >
                 <input 
                     ref="fileInput"
                     type="file"
@@ -123,22 +131,22 @@
                     <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                         <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
-                    <div class="mt-4 flex text-sm text-gray-600 dark:text-gray-400 justify-center">
-                        <span class="font-semibold text-blue-600 dark:text-blue-400">คลิกเพื่อเลือกไฟล์</span>
+                    <div class="mt-4 flex text-sm text-gray-400 justify-center">
+                        <span class="font-semibold" :class="isDragging ? 'text-cyan-400' : 'text-cyan-500'">คลิกเพื่อเลือกไฟล์หรือลากไฟล์มาวาง</span>
                     </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">รองรับ PDF, JPG, PNG (เลือกได้หลายไฟล์)</p>
+                    <p class="text-xs text-gray-500 mt-1">รองรับ PDF, JPG, PNG (เลือกได้หลายไฟล์)</p>
                 </div>
             </div>
 
             <!-- Selected Files List -->
             <div v-if="selectedFiles.length > 0" class="mt-3 space-y-2">
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">ไฟล์ที่เลือก:</p>
-                <div v-for="(file, index) in selectedFiles" :key="index" class="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                <p class="text-sm font-medium text-gray-300">ไฟล์ที่เลือก:</p>
+                <div v-for="(file, index) in selectedFiles" :key="index" class="flex items-center justify-between p-2 bg-gray-700 border border-gray-600 rounded-lg">
                     <div class="flex items-center">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 text-cyan-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="text-sm text-gray-700 dark:text-gray-200">{{ file.name }}</span>
+                        <span class="text-sm text-gray-200">{{ file.name }}</span>
                     </div>
                     <button @click.stop="removeFile(index)" type="button" class="text-red-600 hover:text-red-800 dark:text-red-400">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -191,6 +199,7 @@ const isEditing = ref(false)
 const eventId = ref(null)
 const selectedFiles = ref([])
 const uploading = ref(false)
+const isDragging = ref(false)
 
 const form = reactive({
   topic: '',
@@ -227,6 +236,12 @@ onMounted(async () => {
 
 const handleFileSelect = (event) => {
   selectedFiles.value = Array.from(event.target.files)
+}
+
+const handleDrop = (event) => {
+  isDragging.value = false
+  const files = Array.from(event.dataTransfer.files)
+  selectedFiles.value = files
 }
 
 const removeFile = (index) => {
