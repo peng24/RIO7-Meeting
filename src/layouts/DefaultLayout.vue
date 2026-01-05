@@ -80,20 +80,43 @@
 
     <!-- Sidebar -->
     <aside
-      class="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+      class="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-gradient-to-b from-blue-700 via-blue-800 to-blue-900 border-r border-blue-900 md:translate-x-0"
       :class="{ 'transform-none': isSidebarOpen }"
       aria-label="Sidenav"
       id="drawer-navigation"
     >
-      <div class="overflow-y-auto py-5 px-3 h-full bg-white dark:bg-gray-800">
+      <!-- Logo Section -->
+      <div class="px-4 pt-6 pb-4 border-b border-blue-700">
+        <div class="flex items-center space-x-3">
+          <!-- Water Drop Icon -->
+          <svg class="w-10 h-10 flex-shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 4C20 4 10 16 10 24C10 29.5228 14.4772 34 20 34C25.5228 34 30 29.5228 30 24C30 16 20 4 20 4Z" 
+                  fill="url(#waterGradient)" stroke="white" stroke-width="1.5"/>
+            <circle cx="16" cy="22" r="2.5" fill="white" opacity="0.4"/>
+            <defs>
+              <linearGradient id="waterGradient" x1="20" y1="4" x2="20" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#67E8F9"/>
+                <stop offset="1" stop-color="#06B6D4"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <!-- Text -->
+          <div class="flex flex-col">
+            <span class="text-white font-bold text-lg leading-tight">Smart Meeting</span>
+            <span class="text-cyan-300 text-xs font-medium tracking-wide">RIO 7</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-y-auto py-6 px-4 h-[calc(100%-180px)]">
         <ul class="space-y-2">
           <li>
             <router-link
               to="/"
-              class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              active-class="bg-gray-100 dark:bg-gray-700"
+              class="flex items-center p-3 text-base font-medium text-blue-100 rounded-xl hover:bg-blue-600 hover:text-white hover:translate-x-1 transition-all duration-200 group"
+              active-class="bg-white text-blue-700 shadow-lg font-bold scale-105"
             >
-              <svg aria-hidden="true" class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path></svg>
+              <svg aria-hidden="true" class="w-6 h-6 transition duration-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path></svg>
               <span class="ml-3">Dashboard</span>
             </router-link>
           </li>
@@ -101,20 +124,20 @@
             <router-link
               v-if="authStore.isAuthenticated"
               to="/booking"
-              class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-               active-class="bg-gray-100 dark:bg-gray-700"
+              class="flex items-center p-3 text-base font-medium text-blue-100 rounded-xl hover:bg-blue-600 hover:text-white hover:translate-x-1 transition-all duration-200 group"
+              active-class="bg-white text-blue-700 shadow-lg font-bold scale-105"
             >
-              <svg aria-hidden="true" class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+              <svg aria-hidden="true" class="flex-shrink-0 w-6 h-6 transition duration-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
               <span class="ml-3">จองห้องประชุม</span>
             </router-link>
           </li>
           <li>
             <router-link
               to="/calendar"
-              class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-               active-class="bg-gray-100 dark:bg-gray-700"
+              class="flex items-center p-3 text-base font-medium text-blue-100 rounded-xl hover:bg-blue-600 hover:text-white hover:translate-x-1 transition-all duration-200 group"
+              active-class="bg-white text-blue-700 shadow-lg font-bold scale-105"
             >
-              <svg aria-hidden="true" class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
+              <svg aria-hidden="true" class="flex-shrink-0 w-6 h-6 transition duration-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
               <span class="ml-3">ปฏิทิน</span>
             </router-link>
           </li>
@@ -122,10 +145,10 @@
       </div>
       
        <!-- Footer in Sidebar -->
-       <div class="absolute bottom-0 left-0 justify-center p-4 space-x-4 w-full lg:flex bg-white dark:bg-gray-800 border-t border-gray-200 z-20">
-          <div class="text-xs text-center text-gray-500">
+       <div class="absolute bottom-0 left-0 justify-center p-4 space-x-4 w-full lg:flex bg-blue-900 bg-opacity-50 border-t border-blue-700 z-20">
+          <div class="text-xs text-center text-blue-200">
              <p>จัดทำโดย ฝ่ายประชาสัมพันธ์และสารสนเทศ สชป.7</p>
-             <p>โทร 408</p>
+             <p class="text-cyan-300 font-semibold mt-1">โทร 408</p>
           </div>
        </div>
     </aside>
