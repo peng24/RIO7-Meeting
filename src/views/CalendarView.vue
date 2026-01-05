@@ -310,7 +310,14 @@ const fetchHolidays = async (fetchInfo, successCallback, failureCallback) => {
     // Ideally we should append or manage intelligently, but for monthly view this works well.
     const newHolidayDates = new Set(holidayDates.value)
 
-    const events = response.data.items.map(item => {
+    const events = response.data.items
+        .filter(item => {
+            const title = item.summary || ''
+            // Filter keywords
+            const excluded = ['วาเลนไทน์', 'ตรุษจีน', 'คริสต์มาส', 'ฮาโลวีน', 'ลอยกระทง', 'ไหว้พระจันทร์', 'สารทจีน', 'อีสเตอร์']
+            return !excluded.some(keyword => title.includes(keyword))
+        })
+        .map(item => {
         // Store date for background highlighting
         const dateStr = item.start.date || item.start.dateTime.split('T')[0]
         newHolidayDates.add(dateStr)
@@ -324,6 +331,7 @@ const fetchHolidays = async (fetchInfo, successCallback, failureCallback) => {
             borderColor: 'transparent',
             textColor: '#dc2626', // Red-600
             editable: false,
+            classNames: ['holiday-event'], // Add class for styling
             extendedProps: {
                 isHoliday: true,
                 description: item.description
@@ -477,5 +485,21 @@ const calendarOptions = reactive({
 .fc-daygrid-day.bg-red-50 .fc-daygrid-day-number {
     color: #991b1b; /* red-800 */
     font-weight: 700;
+}
+
+/* Holiday Event Styling - Bold and Centered */
+.fc-event.holiday-event {
+    text-align: center !important;
+    justify-content: center !important;
+    font-weight: bold !important;
+    font-size: 0.9em;
+    opacity: 1 !important;
+    white-space: normal !important; /* Allow wrapping if needed */
+}
+
+/* Specific inner content centering */
+.fc-event.holiday-event .fc-event-main {
+    text-align: center !important;
+    width: 100%;
 }
 </style>

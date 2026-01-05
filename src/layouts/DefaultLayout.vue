@@ -14,7 +14,7 @@
             <span class="sr-only">Toggle sidebar</span>
           </button>
           <a href="#" class="flex items-center justify-between mr-4">
-            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Rio7 Meeting</span>
+            <span class="self-center text-lg sm:text-xl font-bold whitespace-nowrap dark:text-white truncate max-w-[200px] sm:max-w-none">ระบบจองห้องประชุม สำนักงานชลประทานที่ 7</span>
           </a>
         </div>
         <div class="flex items-center lg:order-2">
