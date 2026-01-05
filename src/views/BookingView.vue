@@ -11,14 +11,15 @@
       </div>
 
       <!-- Access Control Check -->
-      <div v-if="!authStore.canBook" class="p-8 text-center">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <div v-if="!authStore.canBook" class="p-8 text-center bg-red-50 dark:bg-red-900 rounded-lg border border-red-200 dark:border-red-700">
+        <svg class="mx-auto h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">ไม่มีสิทธิ์เข้าถึง</h3>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">คุณไม่มีสิทธิ์สร้างกิจกรรม กรุณาติดต่อ Super Admin</p>
+        <h3 class="mt-2 text-lg font-medium text-red-800 dark:text-red-200">⛔ คุณไม่มีสิทธิ์จองห้องประชุม (Guest User)</h3>
+        <p class="mt-1 text-sm text-red-600 dark:text-red-300">กรุณาติดต่อ Admin เพื่อขอสิทธิ์</p>
+        <p class="mt-4 text-xs text-gray-500 dark:text-gray-400 font-mono">Current Role: {{ authStore.role }}</p>
         <div class="mt-6">
-            <router-link to="/" class="text-sm font-medium text-blue-600 hover:text-blue-500">กลับสู่หน้าหลัก <span aria-hidden="true">&rarr;</span></router-link>
+            <router-link to="/" class="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">กลับสู่หน้าหลัก <span aria-hidden="true">&rarr;</span></router-link>
         </div>
       </div>
 

@@ -128,8 +128,9 @@ const handleEmailLogin = async () => {
     } catch (error) {
         console.error('Email Login failed', error)
         let msg = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
-        if (error.code === 'auth/user-not-found') msg = 'ไม่พบผู้ใช้งานนี้ในระบบ'
-        if (error.code === 'auth/wrong-password') msg = 'รหัสผ่านไม่ถูกต้อง'
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+            msg = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง (หากใช้อีเมลส่วนตัวกรุณาเลือก Login with Google)'
+        }
         
         Swal.fire({
             icon: 'error',
