@@ -4,7 +4,9 @@ import {
     GoogleAuthProvider, 
     signInWithPopup, 
     signOut,
-    signInWithEmailAndPassword
+    signInWithEmailAndPassword,
+    setPersistence,
+    browserLocalPersistence
 } from 'firebase/auth'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import Swal from 'sweetalert2'
@@ -28,6 +30,7 @@ export const useAuthStore = defineStore('auth', {
         provider.addScope('https://www.googleapis.com/auth/calendar')
         provider.addScope('https://www.googleapis.com/auth/calendar.events')
 
+        await setPersistence(auth, browserLocalPersistence)
         const result = await signInWithPopup(auth, provider)
         const credential = GoogleAuthProvider.credentialFromResult(result)
         const token = credential.accessToken
@@ -46,6 +49,7 @@ export const useAuthStore = defineStore('auth', {
     
     async loginWithEmail(email, password) {
         try {
+            await setPersistence(auth, browserLocalPersistence)
             const result = await signInWithEmailAndPassword(auth, email, password)
             const user = result.user
             
