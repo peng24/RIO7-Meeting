@@ -1,8 +1,8 @@
 <template>
   <div class="h-[calc(100vh-80px)] p-4 sm:p-6 lg:p-8 flex flex-col">
-    <div class="bg-white rounded-xl shadow-xl flex-grow flex flex-col overflow-hidden">
+    <div class="bg-gray-800 border border-gray-700/50 shadow-2xl shadow-black/50 rounded-2xl flex-grow flex flex-col overflow-hidden">
       <!-- Calendar Component -->
-      <FullCalendar ref="calendarRef" :options="calendarOptions" class="h-full w-full" />
+      <FullCalendar ref="calendarRef" :options="calendarOptions" class="h-full w-full dark-calendar" />
     </div>
 
     <!-- Event Detail Modal -->
@@ -11,9 +11,9 @@
       <div class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity backdrop-blur-sm" @click="closeModal"></div>
 
       <!-- Modal Panel -->
-      <div class="relative bg-white rounded-2xl px-4 pt-5 pb-4 text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full sm:p-8 border border-gray-100">
+      <div class="relative bg-gray-800 border border-gray-700/50 rounded-2xl px-4 pt-5 pb-4 text-left overflow-hidden shadow-2xl shadow-black/50 transform transition-all sm:my-8 sm:max-w-lg sm:w-full sm:p-8">
         <div class="absolute top-4 right-4">
-          <button @click="closeModal" type="button" class="bg-gray-100 rounded-full p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+          <button @click="closeModal" type="button" class="bg-gray-700 rounded-full p-2 text-gray-400 hover:text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-gray-800 transition-colors">
             <span class="sr-only">Close</span>
             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -22,48 +22,48 @@
         </div>
         
         <div class="sm:flex sm:items-start">
-          <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-12 sm:w-12">
-            <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-cyan-500/10 sm:mx-0 sm:h-12 sm:w-12">
+            <svg class="h-6 w-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
           <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-            <h3 class="text-xl leading-6 font-bold text-gray-900" id="modal-title">
+            <h3 class="text-xl leading-6 font-bold text-white" id="modal-title">
               {{ selectedEvent?.title || 'รายละเอียดการจอง' }}
             </h3>
             <div class="mt-4 space-y-4">
               <!-- Time -->
-              <div class="flex items-start bg-gray-50 p-3 rounded-lg">
-                <svg class="h-5 w-5 text-indigo-500 mr-3 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div class="flex items-start bg-gray-700/50 p-3 rounded-lg border border-gray-700">
+                <svg class="h-5 w-5 text-cyan-500 mr-3 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div class="text-sm text-gray-600">
-                  <p class="font-medium text-gray-900">เวลา</p>
-                  <p>เริ่ม: {{ formatDateTime(selectedEvent?.start) }}</p>
-                  <p>สิ้นสุด: {{ formatDateTime(selectedEvent?.end) }}</p>
+                  <p class="font-medium text-gray-200">เวลา</p>
+                  <p class="text-gray-400">เริ่ม: {{ formatDateTime(selectedEvent?.start) }}</p>
+                  <p class="text-gray-400">สิ้นสุด: {{ formatDateTime(selectedEvent?.end) }}</p>
                 </div>
               </div>
 
               <!-- Location -->
-              <div class="flex items-start bg-gray-50 p-3 rounded-lg" v-if="selectedEvent?.extendedProps?.location">
-                <svg class="h-5 w-5 text-indigo-500 mr-3 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div class="flex items-start bg-gray-700/50 p-3 rounded-lg border border-gray-700" v-if="selectedEvent?.extendedProps?.location">
+                <svg class="h-5 w-5 text-cyan-500 mr-3 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <div class="text-sm text-gray-600">
-                   <p class="font-medium text-gray-900">สถานที่</p>
-                   <p>{{ selectedEvent.extendedProps.location }}</p>
+                   <p class="font-medium text-gray-200">สถานที่</p>
+                   <p class="text-gray-400">{{ selectedEvent.extendedProps.location }}</p>
                 </div>
               </div>
 
               <!-- Description -->
-              <div class="flex items-start bg-gray-50 p-3 rounded-lg" v-if="selectedEvent?.extendedProps?.description">
-                <svg class="h-5 w-5 text-indigo-500 mr-3 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div class="flex items-start bg-gray-700/50 p-3 rounded-lg border border-gray-700" v-if="selectedEvent?.extendedProps?.description">
+                <svg class="h-5 w-5 text-cyan-500 mr-3 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
                 </svg>
                 <div class="text-sm text-gray-600 w-full">
-                  <p class="font-medium text-gray-900">รายละเอียด</p>
-                  <p class="whitespace-pre-wrap break-words">{{ selectedEvent.extendedProps.description }}</p>
+                  <p class="font-medium text-gray-200">รายละเอียด</p>
+                  <p class="whitespace-pre-wrap break-words text-gray-400">{{ selectedEvent.extendedProps.description }}</p>
                 </div>
               </div>
             </div>
@@ -75,7 +75,7 @@
           <template v-if="authStore.canManageEvent(selectedEvent)">
              <button 
               type="button" 
-              class="w-full inline-flex justify-center items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 sm:w-auto"
+              class="w-full inline-flex justify-center items-center text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none dark:focus:ring-blue-800 shadow-lg sm:w-auto"
               @click="editEvent"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -85,7 +85,7 @@
             </button>
             <button 
               type="button" 
-              class="w-full inline-flex justify-center items-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 sm:w-auto"
+              class="w-full inline-flex justify-center items-center focus:outline-none text-white bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-red-900 shadow-lg sm:w-auto"
               @click="handleDeleteEvent"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -97,7 +97,7 @@
           
           <button 
             type="button" 
-            class="w-full inline-flex justify-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700 sm:w-auto"
+            class="w-full inline-flex justify-center text-gray-300 bg-gray-700 border border-gray-600 focus:outline-none hover:bg-gray-600 focus:ring-4 focus:ring-gray-700 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 sm:w-auto"
             @click="closeModal"
           >
             ปิด
@@ -123,6 +123,10 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import moment from 'moment'
 import 'moment/locale/th'
+
+// --- CONSTANTS ---
+const ADMIN_CALENDAR_ID = 'sarabun07@gmail.com'
+// -----------------
 
 // Import at top
 import { formatThaiDate, formatThaiTime } from '../utils/thaiDate'
@@ -229,7 +233,7 @@ const fetchEvents = async (fetchInfo, successCallback, failureCallback) => {
     
     // Auth User: Use Access Token
     if (authStore.accessToken) {
-      response = await axios.get('https://www.googleapis.com/calendar/v3/calendars/sarabun07@gmail.com/events', {
+      response = await axios.get(`https://www.googleapis.com/calendar/v3/calendars/${ADMIN_CALENDAR_ID}/events`, {
         headers: {
           'Authorization': `Bearer ${authStore.accessToken}`
         },
@@ -242,7 +246,8 @@ const fetchEvents = async (fetchInfo, successCallback, failureCallback) => {
       })
     } else {
       // Guest User: Use API Key
-      response = await axios.get('https://www.googleapis.com/calendar/v3/calendars/sarabun07@gmail.com/events', {
+      // Explicitly using ADMIN_CALENDAR_ID with API Key for read-only access
+      response = await axios.get(`https://www.googleapis.com/calendar/v3/calendars/${ADMIN_CALENDAR_ID}/events`, {
         params: {
           key: GOOGLE_API_KEY,
           timeMin: fetchInfo.startStr,
@@ -460,56 +465,65 @@ const calendarOptions = reactive({
 /* Title */
 .fc-toolbar-title {
   font-size: 1.5rem !important;
-  font-weight: 700 !important;
-  color: #111827; /* gray-900 */
+  font-weight: 800 !important;
+  color: #f3f4f6 !important; /* gray-100 */
+  letter-spacing: -0.025em;
 }
 
 /* Headers */
 .fc-col-header-cell-cushion {
-  color: #374151; /* gray-700 */
+  color: #e5e7eb; /* gray-200 */
   font-weight: 600;
   padding: 8px 0 !important;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
 }
 
-/* Day Number */
-.fc-daygrid-day-number {
-  color: #374151;
-  font-weight: 500;
-  padding: 8px !important;
+/* Dark Theme Overrides for Calendar */
+.fc-theme-standard td, .fc-theme-standard th {
+    border-color: #374151 !important; /* gray-700 */
 }
 
-/* Event Styling */
-.fc-event {
-  border-radius: 4px;
-  box-shadow: none;
-  transition: all 0.2s;
-  border: none;
+.fc-day-today {
+    background-color: rgba(6, 182, 212, 0.1) !important; /* cyan-500/10 */
 }
 
-.fc-event:hover {
-  transform: translateY(-1px);
+.fc-list {
+    border-color: #374151 !important;
 }
 
-/* Holiday Background Overrides */
-/* When a valid holiday cell is marked, ensure text is readable */
+.fc-list-event:hover td {
+    background-color: #374151 !important; /* gray-700 */
+}
+
+.fc-list-day-cushion {
+    background-color: #1f2937 !important; /* gray-800 */
+}
+
+/* Button Overrides - Dark */
+.fc .fc-button-primary {
+  background-color: #374151; /* gray-700 */
+  border-color: #4b5563; /* gray-600 */
+  color: #e5e7eb;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: #4b5563; /* gray-600 */
+    border-color: #6b7280; /* gray-500 */
+    color: #ffffff;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: #06b6d4; /* cyan-500 */
+    border-color: #0891b2; /* cyan-600 */
+    color: #ffffff;
+}
+
+.fc-daygrid-day.bg-red-50 {
+    background-color: rgba(153, 27, 27, 0.2) !important; /* Red 900 with opacity */
+}
 .fc-daygrid-day.bg-red-50 .fc-daygrid-day-number {
-    color: #991b1b; /* red-800 */
-    font-weight: 700;
-}
-
-/* Holiday Event Styling - Bold and Centered */
-.fc-event.holiday-event {
-    text-align: center !important;
-    justify-content: center !important;
-    font-weight: bold !important;
-    font-size: 0.9em;
-    opacity: 1 !important;
-    white-space: normal !important; /* Allow wrapping if needed */
-}
-
-/* Specific inner content centering */
-.fc-event.holiday-event .fc-event-main {
-    text-align: center !important;
-    width: 100%;
+    color: #fca5a5; /* red-300 */
 }
 </style>
