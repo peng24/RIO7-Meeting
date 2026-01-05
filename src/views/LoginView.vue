@@ -114,7 +114,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
@@ -129,13 +129,36 @@ const password = ref('');
 const confirmPassword = ref('');
 const loading = ref(false);
 
+const getErrorMessage = (errorCode) => {
+  switch (errorCode) {
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+      return 'รหัสผ่านไม่ถูกต้อง (หรือไม่มีผู้ใช้งานนี้)';
+    case 'auth/user-not-found':
+      return 'ไม่พบผู้ใช้งานนี้';
+    case 'auth/email-already-in-use':
+      return 'อีเมลนี้มีผู้ใช้งานแล้ว';
+    case 'auth/too-many-requests':
+      return 'ล็อกอินบ่อยเกินไป กรุณารอสักครู่';
+    case 'auth/invalid-email':
+       return 'รูปแบบอีเมลไม่ถูกต้อง';
+    default:
+      return 'เกิดข้อผิดพลาด: ' + errorCode;
+  }
+};
+
+onMounted(async () => {
+  // Auto logout on mount to prevent stale sessions
+  await authStore.logout();
+});
+
 const handleGoogleLogin = async () => {
   loading.value = true;
   try {
     await authStore.loginWithGoogle();
     router.push('/');
   } catch (error) {
-    Swal.fire('Error', error.message, 'error');
+    Swal.fire('Error', getErrorMessage(error.code) || error.message, 'error');
   } finally {
     loading.value = false;
   }
@@ -151,7 +174,8 @@ const handleEmailLogin = async () => {
     await authStore.loginWithEmail(email.value, password.value);
     router.push('/');
   } catch (error) {
-    Swal.fire('Error', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง', 'error');
+    console.error(error);
+    Swal.fire('เข้าสู่ระบบไม่สำเร็จ', getErrorMessage(error.code), 'error');
   } finally {
     loading.value = false;
   }
@@ -169,10 +193,22 @@ const handleRegister = async () => {
   loading.value = true;
   try {
     await authStore.registerWithEmail(email.value, password.value);
-    Swal.fire('สำเร็จ', 'สมัครสมาชิกเรียบร้อยแล้ว', 'success');
-    router.push('/');
+    
+    await Swal.fire({
+      icon: 'success',
+      title: 'สมัครสมาชิกสำเร็จ!',
+      text: 'ระบบจะนำท่านเข้าสู่หน้าหลัก...',
+      timer: 1500,
+      showConfirmButton: false
+    });
+    
+    setTimeout(() => {
+        router.push('/');
+    }, 500);
+
   } catch (error) {
-    Swal.fire('Error', error.message, 'error');
+    console.error(error);
+    Swal.fire('สมัครสมาชิกไม่สำเร็จ', getErrorMessage(error.code), 'error');
   } finally {
     loading.value = false;
   }
