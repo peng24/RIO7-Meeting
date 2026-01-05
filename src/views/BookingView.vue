@@ -391,6 +391,13 @@ const submitBooking = async () => {
     end: {
       dateTime: new Date(form.endTime).toISOString(),
       timeZone: 'Asia/Bangkok'
+    },
+    extendedProperties: {
+      shared: {
+        creatorId: authStore.user?.uid || '',
+        creatorName: authStore.user?.displayName || authStore.user?.email || 'Unknown',
+        type: form.meetingType
+      }
     }
   }
 

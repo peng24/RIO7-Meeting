@@ -90,6 +90,25 @@ export const useAuthStore = defineStore('auth', {
         }
     },
 
+    canManageEvent(event) {
+        if (!event) return false
+        
+        // Rule 1: Super Admin and Admin can manage everything
+        if (['super_admin', 'admin'].includes(this.role)) {
+            return true
+        }
+
+        // Rule 2: Staff can only manage their own events
+        // Check extendedProperties.shared.creatorId
+        const creatorId = event.extendedProps?.shared?.creatorId || event.extendedProperties?.shared?.creatorId
+        
+        if (this.user && creatorId === this.user.uid) {
+            return true
+        }
+
+        return false
+    },
+
     async fetchUserRole(user, defaultRole = 'guest') {
         const userRef = doc(db, 'users', user.uid)
         const userSnap = await getDoc(userRef)

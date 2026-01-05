@@ -72,7 +72,7 @@
         
         <!-- Actions -->
         <div class="mt-8 sm:mt-6 sm:flex sm:flex-row-reverse gap-3">
-          <template v-if="isEditable(selectedEvent)">
+          <template v-if="authStore.canManageEvent(selectedEvent)">
              <button 
               type="button" 
               class="w-full inline-flex justify-center items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 sm:w-auto"
@@ -159,9 +159,21 @@ const isEditable = (event) => {
 }
 
 const editEvent = () => {
-  if (selectedEvent.value) {
-    router.push({ path: '/booking', query: { id: selectedEvent.value.id } })
-  }
+    // Check permission again
+    if (!authStore.canManageEvent(selectedEvent.value)) return
+
+    Swal.fire({
+        icon: 'info',
+        title: 'กำลังพัฒนา',
+        text: 'ฟีเจอร์แก้ไขกำลังอยู่ระหว่างการพัฒนา',
+        confirmButtonText: 'รับทราบ'
+    })
+    // simplified for now as requested
+    /*
+    if (selectedEvent.value) {
+        router.push({ path: '/booking', query: { id: selectedEvent.value.id } })
+    }
+    */
 }
 
 const deleteEvent = async () => {
@@ -255,7 +267,9 @@ const fetchEvents = async (fetchInfo, successCallback, failureCallback) => {
       extendedProps: {
         location: item.location,
         description: item.description,
-        isHoliday: false
+        isHoliday: false,
+        // Map shared properties from Google API
+        shared: item.extendedProperties?.shared || {}
       },
       backgroundColor: '#1a56db', // Blue-700
       borderColor: '#1a56db',
