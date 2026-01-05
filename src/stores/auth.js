@@ -5,6 +5,7 @@ import {
     signInWithPopup, 
     signOut,
     signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
     setPersistence,
     browserLocalPersistence
 } from 'firebase/auth'
@@ -64,6 +65,27 @@ export const useAuthStore = defineStore('auth', {
             return user
         } catch (error) {
             console.error('Email Login Error:', error)
+            throw error
+        }
+    },
+
+    async registerWithEmail(email, password) {
+        try {
+            const result = await createUserWithEmailAndPassword(auth, email, password)
+            const user = result.user
+            
+            // Create user doc with 'pending' role immediately
+            await setDoc(doc(db, 'users', user.uid), {
+                email: user.email,
+                role: 'pending',
+                createdAt: new Date()
+            })
+
+            const token = await user.getIdToken()
+            this.setUser(user, token, 'pending')
+            return user
+        } catch (error) {
+            console.error('Registration Error:', error)
             throw error
         }
     },

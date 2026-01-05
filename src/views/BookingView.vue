@@ -10,6 +10,11 @@
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">กรอกรายละเอียดเพื่อสร้างนัดหมายในปฏิทิน</p>
       </div>
 
+      <!-- Pending Warning -->
+      <div v-if="authStore.role === 'pending'" class="mb-6 p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-100 dark:bg-yellow-200 dark:text-yellow-900" role="alert">
+        <span class="font-medium">⚠️ กรุณารออนุมัติก่อน</span> ถ้าต้องการด่วน โทรภายใน 408
+      </div>
+
       <!-- Access Control Check -->
       <div v-if="!authStore.canBook" class="p-8 text-center bg-red-50 dark:bg-red-900 rounded-lg border border-red-200 dark:border-red-700">
         <svg class="mx-auto h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">

@@ -20,7 +20,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in users" :key="user.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <tr v-for="user in users" :key="user.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600" :class="{'bg-yellow-50 dark:bg-yellow-900/20': user.role === 'pending'}">
             <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
               {{ user.email }}
             </td>
@@ -33,6 +33,7 @@
                 @change="updateRole(user)"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
+                <option value="pending">Pending</option>
                 <option value="guest">Guest</option>
                 <option value="staff">Staff</option>
                 <option value="admin">Admin</option>
@@ -74,6 +75,7 @@
                         <div>
                             <label for="new-role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">สิทธิ์การใช้งาน</label>
                              <select v-model="newUser.role" id="new-role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                                <option value="pending">Pending</option>
                                 <option value="guest">Guest</option>
                                 <option value="staff">Staff</option>
                                 <option value="admin">Admin</option>
