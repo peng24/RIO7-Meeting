@@ -1,233 +1,184 @@
 <template>
-<template>
-  <div class="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-800 via-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full bg-gray-800 border border-gray-700/50 p-8 sm:p-10 rounded-2xl shadow-2xl shadow-black/50">
-      <!-- Header -->
-      <div class="text-center mb-8">
-        <h2 class="text-2xl font-extrabold text-white tracking-tight">
-          ยินดีต้อนรับสู่ระบบจองห้องประชุม
-        </h2>
-        <p class="text-sm text-gray-400 mt-2">สชป.7</p>
-      </div>
+  <div class="min-h-screen flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-800 via-gray-900 to-black">
+    <div class="w-full max-w-md bg-gray-800/80 backdrop-blur-xl border border-gray-700 rounded-3xl shadow-2xl overflow-hidden relative">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-2 bg-cyan-500 blur-[50px] opacity-40"></div>
 
-      <!-- Tabs -->
-      <div class="border-b border-gray-700 mb-6">
-        <ul class="flex -mb-px text-sm font-medium text-center">
-            <li class="flex-1">
-                <button 
-                    @click="activeTab = 'google'"
-                    :class="[
-                        'inline-block p-4 w-full rounded-t-lg transition-all',
-                        activeTab === 'google' 
-                            ? 'text-cyan-400 border-b-2 border-cyan-500 font-semibold' 
-                            : 'text-gray-400 hover:text-gray-300 hover:border-gray-600 border-b-2 border-transparent'
-                    ]"
-                >
-                    <svg class="w-5 h-5 mr-2 inline-block" :class="activeTab === 'google' ? 'text-cyan-400' : 'text-gray-500'" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
-                    Google Login
-                </button>
-            </li>
-            <li class="flex-1">
-                <button 
-                    @click="activeTab = 'email'"
-                    :class="[
-                        'inline-block p-4 w-full rounded-t-lg transition-all',
-                        activeTab === 'email' 
-                            ? 'text-cyan-400 border-b-2 border-cyan-500 font-semibold' 
-                            : 'text-gray-400 hover:text-gray-300 hover:border-gray-600 border-b-2 border-transparent'
-                    ]"
-                >
-                    <svg class="w-5 h-5 mr-2 inline-block" :class="activeTab === 'email' ? 'text-cyan-400' : 'text-gray-500'" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
-                    เจ้าหน้าที่
-                </button>
-            </li>
-        </ul>
-      </div>
-
-      <!-- Tab Content -->
-      <div class="mt-6">
-        <!-- Google Login -->
-        <div v-if="activeTab === 'google'" class="space-y-6">
-            <p class="text-sm text-gray-400 text-center mb-4">เข้าสู่ระบบด้วยบัญชี Google ของท่าน</p>
-            <button @click="handleGoogleLogin" class="group relative w-full flex justify-center items-center py-3 px-4 border border-gray-600 text-sm font-medium rounded-lg text-gray-200 bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-gray-800 transition-colors">
-                <span class="absolute left-4 inset-y-0 flex items-center">
-                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                        <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
-                        <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
-                        <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                    </svg>
-                </span>
-                เข้าสู่ระบบด้วย Google
-            </button>
+      <div class="p-8 sm:p-10">
+        <div class="text-center mb-10">
+          <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2">
+            ระบบจองห้องประชุม
+          </h1>
+          <p class="text-gray-400 text-sm tracking-wide">สำนักงานชลประทานที่ 7</p>
         </div>
 
-        <!-- Email Login -->
-        <form v-if="activeTab === 'email'" @submit.prevent="handleEmailLogin" class="space-y-5">
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-300 mb-2">อีเมล</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                        </svg>
-                    </div>
-                    <input 
-                        id="email" 
-                        v-model="email" 
-                        name="email" 
-                        type="email" 
-                        autocomplete="email" 
-                        required 
-                        class="appearance-none block w-full pl-10 pr-3 py-2.5 border bg-gray-700 border-gray-600 placeholder-gray-400 text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm transition-all"
-                        placeholder="name@example.com"
-                    >
-                </div>
-            </div>
+        <div class="flex mb-8 bg-gray-900/50 p-1 rounded-xl">
+          <button 
+            @click="activeTab = 'staff'"
+            :class="[
+              'flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-300',
+              activeTab === 'staff' 
+                ? 'bg-gray-700 text-white shadow-lg' 
+                : 'text-gray-500 hover:text-gray-300'
+            ]"
+          >
+            เจ้าหน้าที่
+          </button>
+          <button 
+            @click="activeTab = 'google'"
+            :class="[
+              'flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-300',
+              activeTab === 'google' 
+                ? 'bg-gray-700 text-white shadow-lg' 
+                : 'text-gray-500 hover:text-gray-300'
+            ]"
+          >
+            Google Login
+          </button>
+        </div>
 
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-300 mb-2">รหัสผ่าน</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
-                        </svg>
-                    </div>
-                    <input 
-                        id="password" 
-                        v-model="password" 
-                        name="password" 
-                        type="password" 
-                        autocomplete="current-password" 
-                        required 
-                        class="appearance-none block w-full pl-10 pr-3 py-2.5 border bg-gray-700 border-gray-600 placeholder-gray-400 text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm transition-all"
-                        placeholder="••••••••"
-                    >
-                </div>
-            </div>
-
-             <div v-if="isRegistering">
-                <label for="confirm-password" class="block text-sm font-medium text-gray-300 mb-2">ยืนยันรหัสผ่าน</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
-                        </svg>
-                    </div>
-                    <input 
-                        id="confirm-password" 
-                        v-model="confirmPassword" 
-                        name="confirm-password" 
-                        type="password" 
-                        required 
-                        class="appearance-none block w-full pl-10 pr-3 py-2.5 border bg-gray-700 border-gray-600 placeholder-gray-400 text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm transition-all"
-                        placeholder="••••••••"
-                    >
-                </div>
-            </div>
-
-            <div class="pt-2">
-                <button 
-                    type="submit" 
-                    :disabled="loading" 
-                    class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-bold text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-cyan-500/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                    <svg v-if="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    {{ loading ? (isRegistering ? 'กำลังสมัครสมาชิก...' : 'กำลังเข้าสู่ระบบ...') : (isRegistering ? 'ยืนยันการสมัคร' : 'เข้าสู่ระบบ') }}
-                </button>
+        <div v-if="activeTab === 'staff'" class="space-y-6">
+          <div v-if="!isRegister">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">อีเมล</label>
+                <input v-model="email" type="email" placeholder="user@rio7.local" 
+                  class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">รหัสผ่าน</label>
+                <input v-model="password" type="password" placeholder="••••••••" 
+                  class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all">
+              </div>
             </div>
             
-            <div class="text-center mt-4">
-                <button type="button" @click="isRegistering = !isRegistering" class="text-sm font-medium text-cyan-400 hover:text-cyan-300 hover:underline">
-                    {{ isRegistering ? 'มีบัญชีอยู่แล้ว? เข้าสู่ระบบ' : 'ยังไม่มีบัญชี? สมัครสมาชิก' }}
-                </button>
+            <button @click="handleEmailLogin" :disabled="loading"
+              class="w-full mt-6 py-3.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+              <span v-if="loading">กำลังเข้าสู่ระบบ...</span>
+              <span v-else>เข้าสู่ระบบ</span>
+            </button>
+
+            <p class="mt-6 text-center text-sm text-gray-400">
+              ยังไม่มีบัญชี? 
+              <a href="#" @click.prevent="isRegister = true" class="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">สมัครสมาชิก</a>
+            </p>
+          </div>
+
+          <div v-else>
+            <div class="space-y-4">
+               <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">อีเมล</label>
+                <input v-model="email" type="email" placeholder="user@rio7.local" 
+                  class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">รหัสผ่าน</label>
+                <input v-model="password" type="password" placeholder="กำหนดรหัสผ่าน" 
+                  class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">ยืนยันรหัสผ่าน</label>
+                <input v-model="confirmPassword" type="password" placeholder="ยืนยันรหัสผ่านอีกครั้ง" 
+                  class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all">
+              </div>
             </div>
-        </form>
+
+            <button @click="handleRegister" :disabled="loading"
+              class="w-full mt-6 py-3.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-green-500/20 transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+              <span v-if="loading">กำลังสมัคร...</span>
+              <span v-else>ยืนยันการสมัคร</span>
+            </button>
+
+            <p class="mt-6 text-center text-sm text-gray-400">
+              มีบัญชีอยู่แล้ว? 
+              <a href="#" @click.prevent="isRegister = false" class="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">เข้าสู่ระบบ</a>
+            </p>
+          </div>
+        </div>
+
+        <div v-if="activeTab === 'google'" class="flex flex-col items-center justify-center space-y-6 py-4">
+          <p class="text-gray-400 text-sm">เข้าใช้งานด้วยบัญชี Google ของท่าน</p>
+          <button @click="handleGoogleLogin" :disabled="loading"
+            class="w-full py-3.5 bg-white hover:bg-gray-50 text-gray-900 font-bold rounded-xl shadow-lg transform hover:scale-[1.02] transition-all flex items-center justify-center gap-3">
+            <svg class="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            เข้าสู่ระบบด้วย Google
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useAuthStore } from '../stores/auth'
-import { useRouter } from 'vue-router'
-import Swal from 'sweetalert2'
+import { ref } from 'vue';
+import { useAuthStore } from '../stores/auth';
+import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
-const authStore = useAuthStore()
-const router = useRouter()
+const authStore = useAuthStore();
+const router = useRouter();
 
-const activeTab = ref('email')
-const isRegistering = ref(false)
-const email = ref('')
-const password = ref('')
-const confirmPassword = ref('')
-const loading = ref(false)
+const activeTab = ref('staff'); // Default to staff
+const isRegister = ref(false);
+const email = ref('');
+const password = ref('');
+const confirmPassword = ref('');
+const loading = ref(false);
 
 const handleGoogleLogin = async () => {
+  loading.value = true;
   try {
-    await authStore.loginWithGoogle()
-    router.push('/')
+    await authStore.loginWithGoogle();
+    router.push('/');
   } catch (error) {
-    console.error('Google Login failed', error)
-    Swal.fire({
-      icon: 'error',
-      title: 'เข้าสู่ระบบไม่สำเร็จ',
-      text: 'เกิดข้อผิดพลาดในการเชื่อมต่อกับ Google',
-      confirmButtonColor: '#d33'
-    })
+    Swal.fire('Error', error.message, 'error');
+  } finally {
+    loading.value = false;
   }
-}
+};
 
 const handleEmailLogin = async () => {
-    loading.value = true
-    try {
-        if (isRegistering.value) {
-            // Registration Logic
-            if (password.value !== confirmPassword.value) {
-                throw new Error('รหัสผ่านไม่ตรงกัน')
-            }
-            if (password.value.length < 6) {
-                throw new Error('รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร')
-            }
-            
-            await authStore.registerWithEmail(email.value, password.value)
-            
-            Swal.fire({
-                icon: 'success',
-                title: 'สมัครสมาชิกสำเร็จ',
-                text: 'กรุณารอการอนุมัติสิทธิ์จากเจ้าหน้าที่',
-                timer: 2000,
-                showConfirmButton: false
-            })
-            router.push('/')
-            
-        } else {
-            // Login Logic
-            await authStore.loginWithEmail(email.value, password.value)
-            router.push('/')
-        }
-    } catch (error) {
-        console.error('Auth action failed', error)
-        let msg = error.message
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-            msg = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง (หากใช้อีเมลส่วนตัวกรุณาเลือก Login with Google)'
-        } else if (error.code === 'auth/email-already-in-use') {
-             msg = 'อีเมลนี้ถูกใช้งานแล้ว'
-        }
-        
-        Swal.fire({
-            icon: 'error',
-            title: isRegistering.value ? 'สมัครสมาชิกไม่สำเร็จ' : 'เข้าสู่ระบบไม่สำเร็จ',
-            text: msg,
-            confirmButtonColor: '#d33'
-        })
-    } finally {
-        loading.value = false
-    }
-}
+  if (!email.value || !password.value) {
+    Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
+    return;
+  }
+  loading.value = true;
+  try {
+    await authStore.loginWithEmail(email.value, password.value);
+    router.push('/');
+  } catch (error) {
+    Swal.fire('Error', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง', 'error');
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleRegister = async () => {
+  if (!email.value || !password.value || !confirmPassword.value) {
+    Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
+    return;
+  }
+  if (password.value !== confirmPassword.value) {
+    Swal.fire('แจ้งเตือน', 'รหัสผ่านไม่ตรงกัน', 'warning');
+    return;
+  }
+  loading.value = true;
+  try {
+    await authStore.registerWithEmail(email.value, password.value);
+    Swal.fire('สำเร็จ', 'สมัครสมาชิกเรียบร้อยแล้ว', 'success');
+    router.push('/');
+  } catch (error) {
+    Swal.fire('Error', error.message, 'error');
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
+
+<style scoped>
+/* Additional custom styles if needed */
+</style>
