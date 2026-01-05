@@ -18,7 +18,8 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: !!localStorage.getItem('user'),
   }),
   getters: {
-    canBook: (state) => ['super_admin', 'staff'].includes(state.role)
+    canBook: (state) => ['super_admin', 'admin', 'staff'].includes(state.role),
+    isAdmin: (state) => state.role === 'super_admin'
   },
   actions: {
     async loginWithGoogle() {

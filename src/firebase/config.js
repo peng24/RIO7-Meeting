@@ -6,7 +6,7 @@ export const GOOGLE_API_KEY = "AIzaSyAb-IbiElkNpcq6AGKhqsuYmaPDPpHEdV8";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyDgiwCi3yKlTaf8lhcRCYPLcHQD6syH1Ds",
   authDomain: "rio7-meeting.firebaseapp.com",
   projectId: "rio7-meeting",

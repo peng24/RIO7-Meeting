@@ -3,6 +3,7 @@ import DefaultLayout from '../layouts/DefaultLayout.vue'
 import HomeView from '../views/HomeView.vue'
 import BookingView from '../views/BookingView.vue'
 import CalendarView from '../views/CalendarView.vue'
+import AdminView from '../views/AdminView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +31,19 @@ const router = createRouter({
           path: 'calendar',
           name: 'calendar',
           component: CalendarView
+        },
+        {
+            path: 'admin',
+            name: 'admin',
+            component: AdminView,
+            beforeEnter: (to, from, next) => {
+                const authStore = useAuthStore()
+                if (authStore.isAdmin) {
+                    next()
+                } else {
+                    next('/')
+                }
+            }
         }
       ]
     }
