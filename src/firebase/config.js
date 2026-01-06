@@ -1,18 +1,18 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-export const GOOGLE_API_KEY = "AIzaSyAb-IbiElkNpcq6AGKhqsuYmaPDPpHEdV8";
+export const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 export const firebaseConfig = {
-  apiKey: "AIzaSyDgiwCi3yKlTaf8lhcRCYPLcHQD6syH1Ds",
-  authDomain: "rio7-meeting.firebaseapp.com",
-  projectId: "rio7-meeting",
-  storageBucket: "rio7-meeting.firebasestorage.app",
-  messagingSenderId: "856687113190",
-  appId: "1:856687113190:web:8b0c575d70fa3f033d1c27"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 import { getFirestore } from 'firebase/firestore';
@@ -23,6 +23,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export const GAS_UPLOAD_URL = "https://script.google.com/macros/s/AKfycbxMyIucnzGIvEDCTOPG4gcXEWwfXMbN_648OQcbUsXH8hrQCwMm4hSNsCPMSluUKMoDDg/exec";
+export const GAS_UPLOAD_URL = import.meta.env.VITE_GAS_API_URL;
 
 export { auth, db };

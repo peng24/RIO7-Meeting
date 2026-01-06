@@ -1,32 +1,38 @@
-export const formatThaiDate = (dateString, format = 'long') => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
+// Utility to format dates to Thai locale without moment.js
+export const formatThaiDate = (dateString, type = 'medium') => {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
   
-  const options = format === 'long' 
-    ? {
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric',
-        calendar: 'buddhist'
-      }
-    : {
-        year: '2-digit', 
-        month: 'short', 
-        day: 'numeric',
-        calendar: 'buddhist'
-      }
+  // Check if date is valid
+  if (isNaN(date.getTime())) return '-';
 
-  return new Intl.DateTimeFormat('th-TH', options).format(date)
-}
+  const options = {
+    year: 'numeric',
+    month: type === 'short' ? 'short' : 'long',
+    day: 'numeric',
+    calendar: 'buddhist'
+  };
+
+  try {
+    return new Intl.DateTimeFormat('th-TH', options).format(date);
+  } catch (e) {
+    return dateString;
+  }
+};
 
 export const formatThaiTime = (dateString) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
+  if (!dateString) return '-';
+  const date = new Date(dateString);
   
-  return new Intl.DateTimeFormat('th-TH', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  }).format(date) + ' น.'
-}
+  if (isNaN(date.getTime())) return '-';
+
+  try {
+    return new Intl.DateTimeFormat('th-TH', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).format(date) + ' น.';
+  } catch (e) {
+    return '';
+  }
+};

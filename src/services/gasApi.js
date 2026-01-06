@@ -2,7 +2,6 @@ import axios from 'axios';
 import { GAS_UPLOAD_URL } from '../firebase/config';
 
 // Generic function to call Google Apps Script
-// Generic function to call Google Apps Script
 const callGasApi = async (payload) => {
   // GAS requires POST data to be a stringified object and strictly prefers text/plain
   // to avoid triggering CORS preflight OPTIONS requests which it doesn't handle well.
@@ -48,18 +47,9 @@ export const uploadFile = async (file) => {
 export const createEvent = async (eventData) => {
   const payload = {
     action: 'create_event',
-    title: eventData.title,
-    startTime: eventData.startTime,
-    endTime: eventData.endTime,
-    description: eventData.description,
-    location: eventData.location,
-    creatorId: eventData.creatorId,
-    creatorName: eventData.creatorName,
-    type: eventData.type
+    ...eventData
   };
-  
   const result = await callGasApi(payload);
-  
   if (result && result.status === 'success') {
     return result;
   } else {
@@ -73,9 +63,7 @@ export const deleteEvent = async (eventId) => {
     action: 'delete_event',
     eventId: eventId
   };
-  
   const result = await callGasApi(payload);
-  
   if (result && result.status === 'success') {
     return result;
   } else {
@@ -90,12 +78,39 @@ export const updateEvent = async (eventId, eventData) => {
     eventId: eventId,
     ...eventData
   };
-  
   const result = await callGasApi(payload);
-  
   if (result && result.status === 'success') {
     return result;
   } else {
     throw new Error(result?.message || 'Failed to update event');
+  }
+};
+
+// [NEW] Get Event By ID
+export const getEventById = async (eventId) => {
+  const payload = {
+    action: 'get_event_by_id',
+    eventId: eventId
+  };
+  const result = await callGasApi(payload);
+  if (result && result.status === 'success') {
+    return result.data;
+  } else {
+    throw new Error(result?.message || 'Failed to fetch event');
+  }
+};
+
+// [NEW] Get Events in Range
+export const getEvents = async (startTime, endTime) => {
+  const payload = {
+    action: 'get_events',
+    startTime: startTime,
+    endTime: endTime
+  };
+  const result = await callGasApi(payload);
+  if (result && result.status === 'success') {
+    return result.data;
+  } else {
+    throw new Error(result?.message || 'Failed to fetch events');
   }
 };

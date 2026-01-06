@@ -128,27 +128,16 @@ import listPlugin from '@fullcalendar/list'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { GOOGLE_API_KEY } from '../firebase/config'
-import { deleteEvent } from '../services/gasApi'
-import axios from 'axios'
+import { deleteEvent, getEvents } from '../services/gasApi'
 import Swal from 'sweetalert2'
-import moment from 'moment'
-import 'moment/locale/th'
-
-// --- CONSTANTS ---
-const ADMIN_CALENDAR_ID = 'sarabun07@gmail.com'
-// -----------------
-
-// Import at top
 import { formatThaiDate, formatThaiTime } from '../utils/thaiDate'
-
-moment.locale('th')
 
 const router = useRouter()
 const authStore = useAuthStore()
 const calendarRef = ref(null)
 const showModal = ref(false)
 const selectedEvent = ref(null)
-const holidayDates = ref(new Set()) // Use Set for O(1) lookup
+const holidayDates = ref(new Set()) 
 
 const handleEventClick = (info) => {
   selectedEvent.value = info.event
@@ -160,13 +149,12 @@ const closeModal = () => {
   selectedEvent.value = null
 }
 
-
 const formatDateTime = (date) => {
   if (!date) return '-'
   return `${formatThaiDate(date, 'short')} เวลา ${formatThaiTime(date)}`
 }
 
-// [Added] Computed property to separate Description and Links & Format Text
+// Computed property to separate Description and Links & Format Text
 const eventDescription = computed(() => {
     if (!selectedEvent.value?.extendedProps?.description) return { text: '', html: '', links: [] }
     
@@ -252,36 +240,11 @@ const handleDeleteEvent = async () => {
 
 const fetchEvents = async (fetchInfo, successCallback, failureCallback) => {
   try {
-    let response;
-    
-    // Auth User: Use Access Token
-    if (authStore.accessToken) {
-      response = await axios.get(`https://www.googleapis.com/calendar/v3/calendars/${ADMIN_CALENDAR_ID}/events`, {
-        headers: {
-          'Authorization': `Bearer ${authStore.accessToken}`
-        },
-        params: {
-          timeMin: fetchInfo.startStr,
-          timeMax: fetchInfo.endStr,
-          singleEvents: true,
-          orderBy: 'startTime'
-        }
-      })
-    } else {
-      // Guest User: Use API Key
-      // Explicitly using ADMIN_CALENDAR_ID with API Key for read-only access
-      response = await axios.get(`https://www.googleapis.com/calendar/v3/calendars/${ADMIN_CALENDAR_ID}/events`, {
-        params: {
-          key: GOOGLE_API_KEY,
-          timeMin: fetchInfo.startStr,
-          timeMax: fetchInfo.endStr,
-          singleEvents: true,
-          orderBy: 'startTime'
-        }
-      })
-    }
+    // Use GAS API instead of direct Google API call
+    const eventsData = await getEvents(fetchInfo.startStr, fetchInfo.endStr)
 
-    const events = response.data.items.map(item => ({
+    // Map GAS/Google API format to FullCalendar format
+    const events = eventsData.map(item => ({
       id: item.id,
       title: item.summary,
       start: item.start.dateTime || item.start.date,
@@ -292,7 +255,6 @@ const fetchEvents = async (fetchInfo, successCallback, failureCallback) => {
         location: item.location,
         description: item.description,
         isHoliday: false,
-        // Map shared properties from Google API
         shared: item.extendedProperties?.shared || {}
       },
       backgroundColor: '#1a56db', // Blue-700
@@ -303,52 +265,30 @@ const fetchEvents = async (fetchInfo, successCallback, failureCallback) => {
     successCallback(events)
   } catch (error) {
     console.error('Error fetching events:', error)
-    // Only handle auth errors if we were trying to use auth
-    if (authStore.accessToken) {
-      const handled = await authStore.handleAuthError(error)
-      if (!handled) {
-        failureCallback(error)
-      }
-    } else {
-      failureCallback(error)
-    }
+    failureCallback(error)
   }
 }
 
 const fetchHolidays = async (fetchInfo, successCallback, failureCallback) => {
   try {
      const calendarId = 'th.th#holiday@group.v.calendar.google.com'
-     let response;
+     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`
+     const params = new URLSearchParams({
+        key: GOOGLE_API_KEY,
+        timeMin: fetchInfo.startStr,
+        timeMax: fetchInfo.endStr,
+        singleEvents: 'true'
+     })
 
-     if (authStore.accessToken) {
-        response = await axios.get(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`, {
-          headers: {
-            'Authorization': `Bearer ${authStore.accessToken}`
-          },
-          params: {
-            timeMin: fetchInfo.startStr,
-            timeMax: fetchInfo.endStr,
-            singleEvents: true
-          }
-        })
-     } else {
-        // Guest mode
-        response = await axios.get(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`, {
-          params: {
-            key: GOOGLE_API_KEY,
-            timeMin: fetchInfo.startStr,
-            timeMax: fetchInfo.endStr,
-            singleEvents: true
-          }
-        })
-     }
+     const response = await fetch(`${url}?${params.toString()}`)
+     if (!response.ok) throw new Error('Failed to fetch holidays')
+     
+     const data = await response.json()
     
     // Clear and repopulate holiday dates
-    // Note: This logic assumes fetchHolidays runs per view range. 
-    // Ideally we should append or manage intelligently, but for monthly view this works well.
     const newHolidayDates = new Set(holidayDates.value)
 
-    const events = response.data.items
+    const events = data.items
         .filter(item => {
             const title = item.summary || ''
             // Filter keywords
@@ -369,7 +309,7 @@ const fetchHolidays = async (fetchInfo, successCallback, failureCallback) => {
             borderColor: 'transparent',
             textColor: '#dc2626', // Red-600
             editable: false,
-            classNames: ['holiday-event'], // Add class for styling
+            classNames: ['holiday-event'],
             extendedProps: {
                 isHoliday: true,
                 description: item.description
@@ -382,16 +322,21 @@ const fetchHolidays = async (fetchInfo, successCallback, failureCallback) => {
 
   } catch (error) {
     console.warn('Error fetching holidays', error)
-    const handled = await authStore.handleAuthError(error)
-    if (!handled) {
-      successCallback([]) // Fail gracefully for holidays
-    }
+    successCallback([]) // Fail gracefully
   }
 }
 
 const dayCellClassNames = (arg) => {
     // Check if the cell's date matches a holiday
-    const dateStr = moment(arg.date).format('YYYY-MM-DD')
+    const d = arg.date
+    // Format to YYYY-MM-DD manually to avoid timezone issues with toISOString if not careful, 
+    // but FullCalendar dates are usually local or UTC depending on settings. 
+    // Safest for 'dayGridMonth' (where dates are 00:00 local usually):
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    const dateStr = `${year}-${month}-${day}`
+
     if (holidayDates.value.has(dateStr)) {
         return ['bg-red-50 text-red-900'] 
     }
@@ -424,7 +369,7 @@ const calendarOptions = reactive({
       id: 'thai-holidays'
     }
   ],
-  dayCellClassNames: dayCellClassNames, // Register helper
+  dayCellClassNames: dayCellClassNames, 
   height: '100%',
   dayMaxEvents: true,
   nowIndicator: true,
