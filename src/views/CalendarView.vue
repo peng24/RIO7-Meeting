@@ -63,7 +63,7 @@
                 </svg>
                 <div class="text-sm text-gray-600 w-full">
                   <p class="font-medium text-gray-200">รายละเอียด</p>
-                  <p class="whitespace-pre-wrap break-words text-gray-400 mb-2">{{ eventDescription.text }}</p>
+                  <p class="whitespace-pre-wrap break-words text-gray-400 mb-2" v-html="eventDescription.html"></p>
                   
                   <div v-if="eventDescription.links.length > 0" class="mt-2 pt-2 border-t border-gray-600">
                       <p class="text-xs text-gray-500 mb-1">เอกสารแนบ:</p>
@@ -166,20 +166,26 @@ const formatDateTime = (date) => {
   return `${formatThaiDate(date, 'short')} เวลา ${formatThaiTime(date)}`
 }
 
-// [Added] Computed property to separate Description and Links
+// [Added] Computed property to separate Description and Links & Format Text
 const eventDescription = computed(() => {
-    if (!selectedEvent.value?.extendedProps?.description) return { text: '', links: [] }
+    if (!selectedEvent.value?.extendedProps?.description) return { text: '', html: '', links: [] }
     
     const desc = selectedEvent.value.extendedProps.description
     const attachmentRegex = /📎 เอกสารแนบ \d+: (https?:\/\/[^\s]+)/g;
     
     const links = []
-    const cleanText = desc.replace(attachmentRegex, (match, url) => {
+    let cleanText = desc.replace(attachmentRegex, (match, url) => {
         links.push(url)
         return '' // Remove link from main text
     }).trim()
 
-    return { text: cleanText, links }
+    // Create HTML version with clickable links and newlines
+    const urlRegex = /(https?:\/\/[^\s]+)/g
+    const htmlText = cleanText
+        .replace(urlRegex, '<a href="$1" target="_blank" class="text-blue-400 hover:underline">$1</a>')
+        .replace(/\n/g, '<br>')
+
+    return { text: cleanText, html: htmlText, links }
 })
 
 // Check if event is editable (not a holiday)
@@ -436,6 +442,13 @@ const calendarOptions = reactive({
         return `${weekday}ที่ ${day} ${month} ${year}`
       }
     }
+  },
+  eventClassNames: (arg) => {
+      // Style holidays or all-day events distinctively
+      if (arg.event.allDay || arg.event.title.includes('วันหยุด')) {
+          return ['holiday-event']
+      }
+      return []
   }
 })
 </script>
@@ -542,5 +555,17 @@ const calendarOptions = reactive({
 }
 .fc-daygrid-day.bg-red-50 .fc-daygrid-day-number {
     color: #fca5a5; /* red-300 */
+}
+
+/* Holiday Event Styling */
+.holiday-event {
+    font-weight: 800 !important;
+    text-align: center !important;
+    justify-content: center !important;
+}
+
+.holiday-event .fc-event-title {
+    font-weight: 800 !important;
+    text-align: center !important;
 }
 </style>
