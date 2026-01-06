@@ -67,8 +67,21 @@
               <option value="ห้องประชุม SWOC7">ห้องประชุม SWOC7</option>
               <option value="ห้องประชุมเล็ก">ห้องประชุมเล็ก</option>
               <option value="ห้องประชุมรวงผึ้ง(ฝ่ายออกแบบ)">ห้องประชุมรวงผึ้ง(ฝ่ายออกแบบ)</option>
+              <option value="อื่นๆ">อื่นๆ</option>
             </select>
           </div>
+        </div>
+
+        <div v-if="form.room === 'อื่นๆ'" class="mb-6">
+            <label for="otherRoomDetail" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ระบุห้องประชุม / สถานที่ <span class="text-red-600">*</span></label>
+            <input 
+                type="text" 
+                id="otherRoomDetail" 
+                v-model="form.otherRoomDetail"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                placeholder="ระบุชื่อห้องประชุม หรือสถานที่" 
+                required
+            >
         </div>
         
         <div v-if="form.meetingType === 'อื่นๆ'" class="mb-6">
@@ -220,10 +233,13 @@ const form = reactive({
   meetingType: 'ประชุมธรรมดา',
   otherDetail: '',
   room: 'ห้องประชุม SWOC7',
+  otherRoomDetail: '',
   startTime: null,
   endTime: null,
   description: ''
 })
+
+const STANDARD_ROOMS = ['ห้องประชุม SWOC7', 'ห้องประชุมเล็ก', 'ห้องประชุมรวงผึ้ง(ฝ่ายออกแบบ)']
 
 const pageTitle = computed(() => isEditing.value ? 'แก้ไขการจอง' : 'จองห้องประชุม')
 const submitButtonText = computed(() => isEditing.value ? 'บันทึกการแก้ไข' : 'ยืนยันการจอง')
@@ -297,7 +313,15 @@ const fetchEventDetails = async (id) => {
       form.meetingType = 'อื่นๆ' // Fallback
     }
 
-    form.room = event.location || 'ห้องประชุม SWOC7'
+    // Room Logic
+    const room = event.location || 'ห้องประชุม SWOC7'
+    if (STANDARD_ROOMS.includes(room)) {
+        form.room = room
+        form.otherRoomDetail = ''
+    } else {
+        form.room = 'อื่นๆ'
+        form.otherRoomDetail = room
+    }
     const fullDescription = event.description || ''
     
     // Separate Attachments from Description
@@ -350,6 +374,16 @@ const submitBooking = async () => {
       confirmButtonColor: '#4f46e5'
     })
   }
+
+  // Check Custom Room
+  if (form.room === 'อื่นๆ' && !form.otherRoomDetail.trim()) {
+       return Swal.fire({
+          icon: 'error',
+          title: 'กรุณาระบุสถานที่',
+          text: 'คุณเลือกห้องประชุมเป็น "อื่นๆ" กรุณาระบุชื่อสถานที่ด้วย',
+          confirmButtonColor: '#4f46e5'
+       })
+  }
   
   // 1.5 Confirmation
   const confirmResult = await Swal.fire({
@@ -374,8 +408,8 @@ const submitBooking = async () => {
     }
   })
 
-
   // 3. Upload Files (if any)
+  let uploadedUrls = []
   if (selectedFiles.value.length > 0) {
     try {
       uploading.value = true
@@ -384,7 +418,6 @@ const submitBooking = async () => {
         text: `กำลังอัปโหลด ${selectedFiles.value.length} ไฟล์`
       })
       
-      const uploadedUrls = []
       for (let i = 0; i < selectedFiles.value.length; i++) {
         const file = selectedFiles.value[i]
         Swal.update({
@@ -393,16 +426,6 @@ const submitBooking = async () => {
         const publicUrl = await uploadFile(file)
         uploadedUrls.push({ name: file.name, url: publicUrl })
       }
-      
-      // Append all links to description logic moved to step 4
-      /*
-      if (uploadedUrls.length > 0) {
-        form.description += '\n\n'
-        uploadedUrls.forEach((item, index) => {
-          form.description += `📎 เอกสารแนบ ${index + 1}: ${item.url}\n`
-        })
-      }
-      */
       
       selectedFiles.value = [] // Clear after upload
     } catch (uploadError) {
@@ -440,12 +463,18 @@ const submitBooking = async () => {
   }
 
   // Append New Files (continue numbering)
-  if (uploadedUrls && uploadedUrls.length > 0) {
+  if (uploadedUrls.length > 0) {
       if (existingFiles.value.length === 0) finalDescription += '\n\n'
       uploadedUrls.forEach((item, index) => {
           const runningIndex = existingFiles.value.length + index + 1
           finalDescription += `📎 เอกสารแนบ ${runningIndex}: ${item.url}\n`
       })
+  }
+
+  // Final Location
+  let finalLocation = form.room
+  if (form.room === 'อื่นๆ') {
+     finalLocation = form.otherRoomDetail || 'ระบุเอง'
   }
 
   try {
@@ -455,7 +484,7 @@ const submitBooking = async () => {
           startTime: new Date(form.startTime).toISOString(),
           endTime: new Date(form.endTime).toISOString(),
           description: finalDescription,
-          location: form.room,
+          location: finalLocation,
           creatorId: authStore.user?.uid || '',
           creatorName: authStore.user?.displayName || authStore.user?.email || 'Unknown',
           type: form.meetingType,

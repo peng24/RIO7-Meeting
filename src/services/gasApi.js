@@ -2,10 +2,13 @@ import axios from 'axios';
 import { GAS_UPLOAD_URL } from '../firebase/config';
 
 // Generic function to call Google Apps Script
+// Generic function to call Google Apps Script
 const callGasApi = async (payload) => {
-  const response = await axios.post(GAS_UPLOAD_URL, payload, {
+  // GAS requires POST data to be a stringified object and strictly prefers text/plain
+  // to avoid triggering CORS preflight OPTIONS requests which it doesn't handle well.
+  const response = await axios.post(GAS_UPLOAD_URL, JSON.stringify(payload), {
     headers: {
-      'Content-Type': 'text/plain', // Avoid CORS preflight if possible, though GAS usually handles it
+      'Content-Type': 'text/plain', 
     },
   });
   return response.data;
