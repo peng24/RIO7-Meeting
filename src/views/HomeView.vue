@@ -121,10 +121,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, reactive } from 'vue'
 import { useAuthStore } from '../stores/auth'
-import { GOOGLE_API_KEY } from '../firebase/config'
-import axios from 'axios'
-import moment from 'moment'
 import { formatThaiDate, formatThaiTime } from '../utils/thaiDate'
+import { getEvents } from '../services/gasApi'
 
 const authStore = useAuthStore()
 
@@ -157,120 +155,118 @@ onMounted(async () => {
     now.value = new Date()
   }, 1000)
 
-  await fetchTodayStatus()
-  await fetchStats()
+  await fetchAllData()
 })
 
 onUnmounted(() => {
   if (timer) clearInterval(timer)
 })
 
-const fetchStats = async () => {
+const getStartOfDay = (date) => {
+    const d = new Date(date)
+    d.setHours(0, 0, 0, 0)
+    return d
+}
+
+const getEndOfDay = (date) => {
+    const d = new Date(date)
+    d.setHours(23, 59, 59, 999)
+    return d
+}
+
+const addDays = (date, days) => {
+    const d = new Date(date)
+    d.setDate(d.getDate() + days)
+    return d
+}
+
+const fetchAllData = async () => {
     try {
-        // Broad range: approx 1 month back and 1 month forward to ensure current month/week coverage
-        const start = moment().startOf('month').subtract(7, 'days').toISOString()
-        const end = moment().endOf('month').add(7, 'days').toISOString()
+        // Fetch broad range for stats and current status
+        // From start of month - 7 days to end of month + 7 days
+        const today = new Date()
+        const startDate = new Date(today.getFullYear(), today.getMonth(), 1)
+        startDate.setDate(startDate.getDate() - 7)
         
-        const params = {
-            timeMin: start,
-            timeMax: end,
-            singleEvents: true,
-            orderBy: 'startTime'
-        }
+        const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+        endDate.setDate(endDate.getDate() + 7)
 
-        let response
-        if (authStore.accessToken) {
-            response = await axios.get('https://www.googleapis.com/calendar/v3/calendars/sarabun07@gmail.com/events', {
-                headers: { 'Authorization': `Bearer ${authStore.accessToken}` },
-                params
-            })
-        } else {
-             response = await axios.get('https://www.googleapis.com/calendar/v3/calendars/sarabun07@gmail.com/events', {
-                params: { ...params, key: GOOGLE_API_KEY }
-            })
-        }
+        const startIso = startDate.toISOString()
+        const endIso = endDate.toISOString()
 
-        const events = response.data.items || []
+        const events = await getEvents(startIso, endIso)
         
-        // Calculate Stats locally
-        const todayStr = moment().format('YYYY-MM-DD')
-        const tomorrowStr = moment().add(1, 'days').format('YYYY-MM-DD')
-        const startOfWeek = moment().startOf('week')
-        const endOfWeek = moment().endOf('week')
-        const startOfMonth = moment().startOf('month')
-        const endOfMonth = moment().endOf('month')
-
-        let todayCount = 0
-        let tomorrowCount = 0
-        let weekCount = 0
-        let monthCount = 0
-
-        events.forEach(event => {
-            if (event.status === 'cancelled') return 
-            
-            const evtDate = moment(event.start.dateTime || event.start.date)
-            const dateStr = evtDate.format('YYYY-MM-DD')
-            
-            // Check Today
-            if (dateStr === todayStr) todayCount++
-            
-            // Check Tomorrow
-            if (dateStr === tomorrowStr) tomorrowCount++
-            
-            // Check This Week
-            if (evtDate.isBetween(startOfWeek, endOfWeek, 'day', '[]')) weekCount++
-            
-            // Check This Month
-            if (evtDate.isBetween(startOfMonth, endOfMonth, 'day', '[]')) monthCount++
-        })
-
-        stats.today = todayCount
-        stats.tomorrow = tomorrowCount
-        stats.thisWeek = weekCount
-        stats.thisMonth = monthCount
+        // Update Stats
+        calculateStats(events)
+        
+        // Update Room Status
+        updateRoomStatus(events)
 
     } catch (error) {
-        console.error('Error fetching stats:', error)
+        console.error('Error fetching dashboard data:', error)
     }
 }
 
-const fetchTodayStatus = async () => {
-  // Support both Auth and Guest for Room Status too
-  try {
-    const startOfDay = moment().startOf('day').toISOString()
-    const endOfDay = moment().endOf('day').toISOString()
+const calculateStats = (events) => {
+    const today = new Date()
+    const todayStr = getStartOfDay(today).toISOString().split('T')[0]
     
-    const params = {
-        timeMin: startOfDay,
-        timeMax: endOfDay,
-        singleEvents: true,
-        orderBy: 'startTime'
-    }
+    const tomorrow = addDays(today, 1)
+    const tomorrowStr = getStartOfDay(tomorrow).toISOString().split('T')[0]
+    
+    // Week (Sunday - Saturday)
+    const day = today.getDay()
+    const diff = today.getDate() - day + (day == 0 ? -6 : 1) - 1; // adjust when day is sunday
+    // Actually standard JS Sunday=0. Let's assume start of week is Sunday
+    const startOfWeek = new Date(today)
+    startOfWeek.setDate(today.getDate() - today.getDay())
+    startOfWeek.setHours(0,0,0,0)
+    
+    const endOfWeek = new Date(startOfWeek)
+    endOfWeek.setDate(startOfWeek.getDate() + 6)
+    endOfWeek.setHours(23,59,59,999)
 
-    let response
-    if (authStore.accessToken) {
-      response = await axios.get('https://www.googleapis.com/calendar/v3/calendars/sarabun07@gmail.com/events', {
-        headers: { 'Authorization': `Bearer ${authStore.accessToken}` },
-        params
-      })
-    } else {
-       response = await axios.get('https://www.googleapis.com/calendar/v3/calendars/sarabun07@gmail.com/events', {
-        params: { ...params, key: GOOGLE_API_KEY }
-      })
-    }
+    // Month
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+    endOfMonth.setHours(23,59,59,999)
 
-    const events = response.data.items || []
-    updateRoomStatus(events)
+    let todayCount = 0
+    let tomorrowCount = 0
+    let weekCount = 0
+    let monthCount = 0
 
-  } catch (error) {
-    console.error('Error fetching dashboard data:', error)
-    // Only handle auth errors if strict auth mode, otherwise just log
-    if(authStore.accessToken) await authStore.handleAuthError(error)
-  }
+    events.forEach(event => {
+        if (event.status === 'cancelled') return 
+        
+        const evtStart = new Date(event.start.dateTime || event.start.date)
+        const dateStr = evtStart.toISOString().split('T')[0] // Careful with UTC vs Local, but simple comparison suffices for broad stats
+        
+        // To be precise with local date string comparison:
+        const evtLocalStr = new Date(evtStart.getTime() - (evtStart.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
+        // Note: Better to just comparing timestamps for ranges
+
+        // Today
+        if (evtLocalStr === todayStr) todayCount++
+        
+        // Tomorrow
+        if (evtLocalStr === tomorrowStr) tomorrowCount++
+        
+        // This Week
+        if (evtStart >= startOfWeek && evtStart <= endOfWeek) weekCount++
+        
+        // This Month
+        if (evtStart >= startOfMonth && evtStart <= endOfMonth) monthCount++
+    })
+
+    stats.today = todayCount
+    stats.tomorrow = tomorrowCount
+    stats.thisWeek = weekCount
+    stats.thisMonth = monthCount
 }
 
 const updateRoomStatus = (events) => {
-  const currentTime = moment()
+  const currentTime = new Date()
 
   // Reset status
   rooms.value.forEach(r => {
@@ -281,17 +277,17 @@ const updateRoomStatus = (events) => {
   // Map events to rooms
   events.forEach(event => {
     const location = event.location
-    const start = moment(event.start.dateTime || event.start.date)
-    const end = moment(event.end.dateTime || event.end.date)
+    const start = new Date(event.start.dateTime || event.start.date)
+    const end = new Date(event.end.dateTime || event.end.date)
 
     // Check if event is happening NOW
-    if (currentTime.isBetween(start, end, null, '[]')) {
+    if (currentTime >= start && currentTime <= end) {
       const roomIndex = rooms.value.findIndex(r => r.id === location)
       if (roomIndex !== -1) {
         rooms.value[roomIndex].isBusy = true
         rooms.value[roomIndex].currentEvent = {
           summary: event.summary,
-          start: start.toISOString(), // Keep ISO for logic if needed, but display uses utils
+          start: start.toISOString(),
           end: end.toISOString()
         }
       }
