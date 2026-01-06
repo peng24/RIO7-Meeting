@@ -395,26 +395,7 @@ const submitBooking = async () => {
     summary = `[${form.otherDetail || 'อื่นๆ'}] ${form.topic}`
   }
 
-  const event = {
-    summary: summary,
-    location: form.room,
-    description: form.description,
-    start: {
-      dateTime: new Date(form.startTime).toISOString(),
-      timeZone: 'Asia/Bangkok'
-    },
-    end: {
-      dateTime: new Date(form.endTime).toISOString(),
-      timeZone: 'Asia/Bangkok'
-    },
-    extendedProperties: {
-      shared: {
-        creatorId: authStore.user?.uid || '',
-        creatorName: authStore.user?.displayName || authStore.user?.email || 'Unknown',
-        type: form.meetingType
-      }
-    }
-  }
+
 
   try {
       // Prepare Event Data for GAS
@@ -430,33 +411,11 @@ const submitBooking = async () => {
       }
 
       if (isEditing.value) {
-          // Editing via GAS is complex (needs event ID logic in GAS), 
-          // For now, if we are strictly following "Proxy for Create/Delete", 
-          // Edit might still assume direct access OR we implement update_event in GAS later.
-          // BUT the user prompt specifically said "Remove all direct gapi... insert calls" and "Use GAS... createEvent"
-          // It didn't explicitly detail 'editEvent' in GAS commands but implied "Calendar operations".
-          // Given the prompt "Switch to 'Option B'... allows Email-based users... without Google permissions",
-          // Direct axios/gapi calls for EDIT will fail for non-Google users.
-          // We should probably mark Edit as "Not Supported" or implementation detail for now unless added.
-          // However, to keep it functional for Admins (who might use this view), we might leave existing logic OR 
-          // throw error.
-          // The prompt says: "Update src/views/BookingView.vue: Remove All direct gapi... insert calls... Use GAS createEvent".
-          // It doesn't mention 'update'.
-          // Let's assume for this specific step we are focusing on CREATE.
-          // If isEditing is true, we might need to handle it.
-          // For now, I'll alert that Edit is not fully migrated or use createEvent (which is wrong for edit).
-          // ACTUALLY, I will comment out the Edit block and show alert if isEditing,
-          // OR better, try to use direct call IF they have token, else fail.
-          // BUT prompt instruction number 2 is: "Remove: All direct gapi.client.calendar.events.insert calls."
-          // It doesn't mandate removing 'update' calls but logical consistency implies it.
-          // Let's stick to the prompt's explicit instruction: "Use GAS: Instead, call gasApi.createEvent({...})".
-          
-          // Note: The previous Edit logic used axios.put.
-          // If I strictly follow instructions to just replace insert, I should handle Create.
-          // But I'll replace the whole block to be safe.
-          
            throw new Error('การแก้ไขรายการยังไม่รองรับผ่านระบบใหม่ (กำลังพัฒนา)')
       } else {
+          // Create via GAS
+          await createEvent(eventData)
+      }
           // Create via GAS
           await createEvent(eventData)
       }

@@ -45,7 +45,14 @@ export const uploadFile = async (file) => {
 export const createEvent = async (eventData) => {
   const payload = {
     action: 'create_event',
-    ...eventData
+    title: eventData.title,
+    startTime: eventData.startTime,
+    endTime: eventData.endTime,
+    description: eventData.description,
+    location: eventData.location,
+    creatorId: eventData.creatorId,
+    creatorName: eventData.creatorName,
+    type: eventData.type
   };
   
   const result = await callGasApi(payload);
