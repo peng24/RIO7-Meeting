@@ -79,3 +79,20 @@ export const deleteEvent = async (eventId) => {
     throw new Error(result?.message || 'Failed to delete event');
   }
 };
+
+// Update Event
+export const updateEvent = async (eventId, eventData) => {
+  const payload = {
+    action: 'update_event',
+    eventId: eventId,
+    ...eventData
+  };
+  
+  const result = await callGasApi(payload);
+  
+  if (result && result.status === 'success') {
+    return result;
+  } else {
+    throw new Error(result?.message || 'Failed to update event');
+  }
+};

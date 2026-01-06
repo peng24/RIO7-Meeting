@@ -108,6 +108,19 @@
         <div class="mb-6">
             <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">เอกสารแนบ (ถ้ามี)</label>
             
+            <!-- Existing Files -->
+            <div v-if="existingFiles.length > 0" class="mb-4 p-4 bg-gray-700/30 rounded-lg border border-gray-600">
+                <h3 class="text-sm font-medium text-gray-300 mb-2">ไฟล์แนบที่มีอยู่:</h3>
+                <div v-for="(file, index) in existingFiles" :key="index" class="flex items-center justify-between py-1">
+                    <a :href="file.url" target="_blank" class="text-blue-400 hover:underline text-sm truncate max-w-xs">
+                        🔗 {{ file.name }}
+                    </a>
+                    <button @click="removeExistingFile(index)" type="button" class="text-red-400 hover:text-red-300 text-xs bg-red-900/20 px-2 py-1 rounded">
+                        ลบ
+                    </button>
+                </div>
+            </div>
+
             <!-- Dropzone -->
             <div 
                 @click="$refs.fileInput.click()" 
@@ -187,7 +200,7 @@ import Swal from 'sweetalert2'
 import axios from 'axios'
 import moment from 'moment'
 import { formatThaiDate, formatThaiTime } from '../utils/thaiDate'
-import { uploadFile, createEvent } from '../services/gasApi'
+import { uploadFile, createEvent, updateEvent } from '../services/gasApi'
 
 const router = useRouter()
 import { th } from 'date-fns/locale';
@@ -197,6 +210,7 @@ const authStore = useAuthStore()
 
 const isEditing = ref(false)
 const eventId = ref(null)
+const existingFiles = ref([])
 const selectedFiles = ref([])
 const uploading = ref(false)
 const isDragging = ref(false)
@@ -248,6 +262,10 @@ const removeFile = (index) => {
   selectedFiles.value.splice(index, 1)
 }
 
+const removeExistingFile = (index) => {
+  existingFiles.value.splice(index, 1)
+}
+
 const fetchEventDetails = async (id) => {
   try {
     Swal.fire({
@@ -280,7 +298,20 @@ const fetchEventDetails = async (id) => {
     }
 
     form.room = event.location || 'ห้องประชุม SWOC7'
-    form.description = event.description || ''
+    const fullDescription = event.description || ''
+    
+    // Separate Attachments from Description
+    // Regex: 📎 เอกสารแนบ X: URL
+    const attachmentRegex = /📎 เอกสารแนบ \d+: (https?:\/\/[^\s]+)/g;
+    const matches = [...fullDescription.matchAll(attachmentRegex)];
+    
+    existingFiles.value = matches.map((m, index) => ({
+      name: `เอกสารแนบ ${index + 1}`,
+      url: m[1]
+    }));
+
+    // Remove links from description shown in form
+    form.description = fullDescription.replace(attachmentRegex, '').trim();
     
     // Date formatting for datetime-local (YYYY-MM-DDTHH:mm)
     const start = event.start.dateTime || event.start.date
@@ -363,13 +394,15 @@ const submitBooking = async () => {
         uploadedUrls.push({ name: file.name, url: publicUrl })
       }
       
-      // Append all links to description
+      // Append all links to description logic moved to step 4
+      /*
       if (uploadedUrls.length > 0) {
         form.description += '\n\n'
         uploadedUrls.forEach((item, index) => {
           form.description += `📎 เอกสารแนบ ${index + 1}: ${item.url}\n`
         })
       }
+      */
       
       selectedFiles.value = [] // Clear after upload
     } catch (uploadError) {
@@ -395,7 +428,25 @@ const submitBooking = async () => {
     summary = `[${form.otherDetail || 'อื่นๆ'}] ${form.topic}`
   }
 
+  // Combine Description: Content + Existing Files + New Files
+  let finalDescription = form.description;
+  
+  // Append Existing Files
+  if (existingFiles.value.length > 0) {
+      finalDescription += '\n\n'
+      existingFiles.value.forEach((file, index) => {
+          finalDescription += `📎 เอกสารแนบ ${index + 1}: ${file.url}\n`
+      })
+  }
 
+  // Append New Files (continue numbering)
+  if (uploadedUrls && uploadedUrls.length > 0) {
+      if (existingFiles.value.length === 0) finalDescription += '\n\n'
+      uploadedUrls.forEach((item, index) => {
+          const runningIndex = existingFiles.value.length + index + 1
+          finalDescription += `📎 เอกสารแนบ ${runningIndex}: ${item.url}\n`
+      })
+  }
 
   try {
       // Prepare Event Data for GAS
@@ -403,19 +454,18 @@ const submitBooking = async () => {
           title: summary,
           startTime: new Date(form.startTime).toISOString(),
           endTime: new Date(form.endTime).toISOString(),
-          description: form.description,
+          description: finalDescription,
           location: form.room,
           creatorId: authStore.user?.uid || '',
           creatorName: authStore.user?.displayName || authStore.user?.email || 'Unknown',
-          type: form.meetingType
+          type: form.meetingType,
+          eventId: eventId.value // Send ID for update
       }
 
       if (isEditing.value) {
-           throw new Error('การแก้ไขรายการยังไม่รองรับผ่านระบบใหม่ (กำลังพัฒนา)')
+           // Call updateEvent
+           await updateEvent(eventId.value, eventData)
       } else {
-          // Create via GAS
-          await createEvent(eventData)
-      }
           // Create via GAS
           await createEvent(eventData)
       }

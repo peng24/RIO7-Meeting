@@ -63,7 +63,17 @@
                 </svg>
                 <div class="text-sm text-gray-600 w-full">
                   <p class="font-medium text-gray-200">รายละเอียด</p>
-                  <p class="whitespace-pre-wrap break-words text-gray-400">{{ selectedEvent.extendedProps.description }}</p>
+                  <p class="whitespace-pre-wrap break-words text-gray-400 mb-2">{{ eventDescription.text }}</p>
+                  
+                  <div v-if="eventDescription.links.length > 0" class="mt-2 pt-2 border-t border-gray-600">
+                      <p class="text-xs text-gray-500 mb-1">เอกสารแนบ:</p>
+                      <div v-for="(link, idx) in eventDescription.links" :key="idx" class="mb-1">
+                          <a :href="link" target="_blank" class="flex items-center text-blue-400 hover:text-blue-300 hover:underline">
+                              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                              เอกสารแนบ {{ idx + 1 }}
+                          </a>
+                      </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -109,7 +119,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -156,6 +166,22 @@ const formatDateTime = (date) => {
   return `${formatThaiDate(date, 'short')} เวลา ${formatThaiTime(date)}`
 }
 
+// [Added] Computed property to separate Description and Links
+const eventDescription = computed(() => {
+    if (!selectedEvent.value?.extendedProps?.description) return { text: '', links: [] }
+    
+    const desc = selectedEvent.value.extendedProps.description
+    const attachmentRegex = /📎 เอกสารแนบ \d+: (https?:\/\/[^\s]+)/g;
+    
+    const links = []
+    const cleanText = desc.replace(attachmentRegex, (match, url) => {
+        links.push(url)
+        return '' // Remove link from main text
+    }).trim()
+
+    return { text: cleanText, links }
+})
+
 // Check if event is editable (not a holiday)
 const isEditable = (event) => {
   if (!event) return false
@@ -167,18 +193,9 @@ const editEvent = () => {
     // Check permission again
     if (!authStore.canManageEvent(selectedEvent.value)) return
 
-    Swal.fire({
-        icon: 'info',
-        title: 'กำลังพัฒนา',
-        text: 'ฟีเจอร์แก้ไขกำลังอยู่ระหว่างการพัฒนา',
-        confirmButtonText: 'รับทราบ'
-    })
-    // simplified for now as requested
-    /*
     if (selectedEvent.value) {
         router.push({ path: '/booking', query: { id: selectedEvent.value.id } })
     }
-    */
 }
 
 const handleDeleteEvent = async () => {
